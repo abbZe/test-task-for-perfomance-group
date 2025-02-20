@@ -92,6 +92,32 @@ $ npm run start:prod
 
 Доступ к статьям без авторизации.
 
+**URL:**  
+`POST http://localhost/articles/public`
+
+**Body (JSON):**
+
+```json
+{
+  "pagination": {
+    "current": "number",
+    "size": "number"
+  },
+  "filter (optional)": {
+    "tags": "string[]"
+  }
+}
+```
+
+---
+
+## 4. Просмотр статьи как гость
+
+Доступ к статье без авторизации.
+
+**URL:**  
+`POST http://localhost/articles/public/:id`
+
 ---
 
 ### Внимание:
@@ -105,7 +131,7 @@ $ npm run start:prod
 
 ---
 
-## 4. Создать статью
+## 5. Создать статью
 
 **URL:**  
 `POST http://localhost/articles`
@@ -124,7 +150,7 @@ $ npm run start:prod
 
 ---
 
-## 5. Получить статью
+## 6. Получить статью
 
 **URL:**  
 `POST http://localhost/articles/:id`
@@ -143,7 +169,7 @@ $ npm run start:prod
 
 ---
 
-## 6. Получить все статьи
+## 7. Получить все статьи
 
 **URL:**  
 `POST http://localhost/articles`
@@ -156,14 +182,14 @@ $ npm run start:prod
     "current": "number",
     "size": "number"
   },
-  "filter": {
+  "filter (optional)": {
     "tags": "string[]"
   }
 }
 ```
 ---
 
-## 7. Патч одной статьи
+## 8. Патч одной статьи
 
 **URL:**  
 `PATCH http://localhost/articles/:id`
@@ -180,7 +206,7 @@ $ npm run start:prod
 }
 ```
 
-## 8. Удаление одной статьи
+## 9. Удаление одной статьи
 
 **URL:**  
 `DELETE http://localhost/articles/:id`
