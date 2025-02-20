@@ -7,7 +7,9 @@ export interface IUserHashOpts {
 }
 
 export const UserHash = () => Inject(UserHashToken);
+
 const UserHashToken = Symbol('USER_HASH_TOKEN');
+
 export const UserHashProvider: Provider<IUserHashOpts> = {
   provide: UserHashToken,
   useFactory: async () => {

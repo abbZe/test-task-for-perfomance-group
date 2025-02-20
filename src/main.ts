@@ -4,7 +4,7 @@ import * as cookieParser from 'cookie-parser';
 import * as compression from 'compression';
 import helmet from 'helmet';
 import { ValidationPipe } from '@nestjs/common';
-import { AllExceptionsFilter } from './filters/exception.filter';
+import { AllExceptionsFilter } from './core/filters/all-exceptions.filter';
 import * as morgan from 'morgan';
 
 async function bootstrap() {

@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from '../../db/db.service';
+import { PrismaService } from '../../../core/db/db.service';
 import { CreateArticleDto } from '../dtos/create-article.dto';
 import { DeleteArticleDto } from '../dtos/delete-article.dto';
 import { FindArticleByIdDto } from '../dtos/find-article-by-id.dto';

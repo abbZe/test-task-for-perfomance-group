@@ -23,7 +23,7 @@ export class IsUserExistPipe implements PipeTransform {
       );
     }
 
-    const userExists = await this.usersService.findOne(value.email);
+    const userExists = await this.usersService.findOne(signUpDtoInstance.email);
 
     if (userExists) {
       throw new ConflictException('User with this email already exists');

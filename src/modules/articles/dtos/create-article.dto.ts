@@ -6,6 +6,7 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
+import { Transform } from 'class-transformer';
 
 type TCreateArticleDto = Prisma.ArticleGetPayload<{
   select: {
@@ -23,6 +24,7 @@ export class CreateArticleDto implements TCreateArticleDto {
 
   @IsString()
   @IsNotEmpty()
+  @Transform(({ value }) => value.trim().toLowerCase())
   title: string;
 
   @IsString()

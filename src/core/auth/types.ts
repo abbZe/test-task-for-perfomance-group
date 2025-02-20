@@ -15,7 +15,7 @@ export interface ISignUpRes {
   access_token: string;
 }
 
-export interface ISignInRes extends ISignUpRes {}
+export type ISignInRes = ISignUpRes;
 
 export interface IUserJWTPayload extends JwtPayload {
   sub: string;

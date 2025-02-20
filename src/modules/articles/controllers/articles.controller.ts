@@ -17,10 +17,10 @@ import { CreateArticleDto } from '../dtos/create-article.dto';
 import { ArticlesService } from '../services/articles.service';
 import { Article } from '@prisma/client';
 import { IsArticleExistByTitlePipe } from '../pipes/is-article-exist-by-title.pipe';
-import { JwtAuthGuard } from '../../auth/guards/jwt.guard';
+import { JwtAuthGuard } from '../../../core/auth/guards/jwt.guard';
 import { IsArticleExistByIdPipe } from '../pipes/is-article-exist-by-id.pipe';
 import { createArticlesFilter } from '../dtos/articles-filter.factory';
-import { TAuthorizedReq } from '../../auth/types';
+import { TAuthorizedReq } from '../../../core/auth/types';
 import { FindArticlesDto } from '../dtos/find-articles.dto';
 import { PatchArticleByIdDto } from '../dtos/patch-article-by-id.dto';
 
