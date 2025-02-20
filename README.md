@@ -72,8 +72,8 @@ $ npm run start:prod
 
 ```json
 {
-  "email": "",
-  "password": ""
+  "email": "string",
+  "password": "string"
 }
 ```
 
@@ -149,7 +149,7 @@ $ npm run start:prod
 {
   "title": "string",
   "description": "string",
-  "tags": ["string"],
+  "tags": "string[]",
   "isPublic": "boolean (optional)",
   "authorId": "string"
 }
@@ -168,7 +168,7 @@ $ npm run start:prod
 {
   "title": "string",
   "description": "string",
-  "tags": ["string"],
+  "tags": "string[]",
   "isPublic": "boolean (optional)",
   "authorId": "string"
 }
@@ -207,7 +207,7 @@ $ npm run start:prod
 {
   "title": "string (optional)",
   "description": "string (optional)",
-  "tags": ["string (optional)"],
+  "tags": "string[] (optional)",
   "isPublic": "boolean (optional)",
   "authorId": "string (optional)"
 }
