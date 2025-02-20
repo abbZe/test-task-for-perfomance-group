@@ -1,0 +1,21 @@
+services:
+  test_db:
+    image: postgres:15-alpine
+    restart: always
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: db_name
+    volumes:
+      - test_db_vol:/var/lib/postgresql/data
+    networks:
+      - test_app_nw
+
+volumes:
+  test_db_vol:
+
+networks:
+  test_app_nw:
+    name: 'test_app_nw'

@@ -1,0 +1,46 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["fullTextSearchPostgres"]
+}
+
+generator json {
+  provider = "prisma-json-types-generator"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  user
+  moderator
+  admin
+}
+
+model User {
+  id       String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name     String?
+  email    String    @unique
+  password String
+  role     UserRole  @default(user)
+  articles Article[]
+
+  deletedAt DateTime? @db.Timestamp()
+  createdAt DateTime  @default(now()) @db.Timestamp()
+  updatedAt DateTime  @default(now()) @updatedAt @db.Timestamp()
+}
+
+model Article {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title       String   @unique
+  description String
+  tags        String[]
+  isPublic    Boolean  @default(false)
+  authorId    String   @db.Uuid
+  author      User     @relation(fields: [authorId], references: [id])
+
+  deletedAt DateTime? @db.Timestamp()
+  createdAt DateTime  @default(now()) @db.Timestamp()
+  updatedAt DateTime  @default(now()) @updatedAt @db.Timestamp()
+}
