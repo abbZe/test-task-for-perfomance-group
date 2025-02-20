@@ -1,43 +1,32 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { LoggerService } from './logger/logger.service';
-import { WinstonLogger } from './logger/winston.logger';
 import * as cookieParser from 'cookie-parser';
 import * as compression from 'compression';
 import helmet from 'helmet';
 import { ValidationPipe } from '@nestjs/common';
+import { AllExceptionsFilter } from './filters/exception.filter';
+import * as morgan from 'morgan';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    cors: {
+      methods: ['GET', 'POST', 'PATCH', 'DELETE'],
+      credentials: true,
+      origin: process.env.CORS_ORIGIN,
+    },
+  });
 
-  app.enableCors();
+  const server = app.getHttpServer();
+  server.setTimeout(60 * 1000);
+  server.keepAliveTimeout = 30000;
+  server.headersTimeout = 31000;
 
-  app.useLogger(new WinstonLogger(await app.get(LoggerService).createLogger()));
-
+  app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
   app.use(cookieParser());
   app.use(compression());
   app.use(helmet());
-  /*
-   * [DESC]: Отключил, чтобы легче было проверять тестовое
-   * а то пришлось бы генерировать токен
-  app.use(
-    doubleCsrf({
-      getSecret: () => 'very_secret_key',
-      cookieName: '__another-knowledge-base-x-csrf-token',
-      cookieOptions: {
-        sameSite: true,
-        httpOnly: true,
-        domain: 'localhost',
-        path: '/',
-      },
-      getTokenFromRequest: (req) => {
-        const cookies = cookie.parse(req.headers.cookie || '');
-        return cookies['__another-knowledge-base-x-csrf-token'];
-      },
-    }).doubleCsrfProtection,
-  );
-   */
 
+  app.useGlobalFilters(new AllExceptionsFilter());
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -45,6 +34,8 @@ async function bootstrap() {
       transform: true,
     }),
   );
+
+  app.enableShutdownHooks();
 
   await app.listen(process.env.PORT ?? 3000);
 }
