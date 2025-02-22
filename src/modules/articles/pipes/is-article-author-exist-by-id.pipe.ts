@@ -1,9 +1,4 @@
-import {
-  Injectable,
-  PipeTransform,
-  BadRequestException,
-  ConflictException,
-} from '@nestjs/common';
+import { Injectable, PipeTransform, BadRequestException } from '@nestjs/common';
 import { CreateArticleDto } from '../dtos/create-article.dto';
 import { plainToInstance } from 'class-transformer';
 import { FindArticleByTitleDto } from '../dtos/find-article-by-title.dto';
@@ -11,7 +6,7 @@ import { validate } from 'class-validator';
 import { PrismaService } from '../../../core/db/db.service';
 
 @Injectable()
-export class IsArticleExistByTitlePipe implements PipeTransform {
+export class IsArticleAuthorExistByIdPipe implements PipeTransform {
   constructor(private readonly prisma: PrismaService) {}
 
   async transform(value: CreateArticleDto) {
@@ -34,14 +29,14 @@ export class IsArticleExistByTitlePipe implements PipeTransform {
       );
     }
 
-    const articleExists = await this.prisma.article.findUnique({
+    const authorExist = await this.prisma.user.findUnique({
       where: {
-        ...findArticleByTitleDto,
+        id: createArticleDtoInstance.authorId,
       },
     });
 
-    if (articleExists) {
-      throw new ConflictException('Article with this title already exists');
+    if (!authorExist) {
+      throw new BadRequestException('Author does not exist');
     }
 
     return value;

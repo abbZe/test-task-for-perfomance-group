@@ -4,14 +4,14 @@ import {
   BadRequestException,
   NotFoundException,
 } from '@nestjs/common';
-import { ArticlesService } from '../services/articles.service';
 import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
 import { FindArticleByIdDto } from '../dtos/find-article-by-id.dto';
+import { PrismaService } from '../../../core/db/db.service';
 
 @Injectable()
 export class IsArticleExistByIdPipe implements PipeTransform {
-  constructor(private readonly articlesService: ArticlesService) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   async transform(id: string) {
     const errors = [];
@@ -27,9 +27,11 @@ export class IsArticleExistByIdPipe implements PipeTransform {
       throw new BadRequestException(errors.map((e) => e.constraints));
     }
 
-    const articleExists = await this.articlesService.findOne(
-      findArticleDtoInstance,
-    );
+    const articleExists = await this.prisma.article.findUnique({
+      where: {
+        ...findArticleDtoInstance,
+      },
+    });
 
     if (!articleExists) {
       throw new NotFoundException('Article not found');

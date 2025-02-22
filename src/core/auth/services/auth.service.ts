@@ -1,17 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { UsersService } from '../../users/services/users.service';
 import { SignUpDto } from '../dtos/sign-up.dto';
 import { ISignInRes, ISignUpRes, TAuthorizedUser } from '../types';
-import { IUserHashOpts, UserHash } from '../../users/providers/users.providers';
+import { PrismaService } from '../../db/db.service';
+import { ArgonHash, IArgonHashOpts } from '../providers/auth.providers';
+import * as R from 'ramda';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly jwtService: JwtService,
-    private readonly usersService: UsersService,
+    private readonly prisma: PrismaService,
 
-    @UserHash() private readonly hash: IUserHashOpts,
+    @ArgonHash() private readonly argonHash: IArgonHashOpts,
   ) {}
 
   async signIn(user: TAuthorizedUser): Promise<ISignInRes> {
@@ -26,7 +27,12 @@ export class AuthService {
   }
 
   async signUp(signUpDto: SignUpDto): Promise<ISignUpRes> {
-    const user = await this.usersService.createOne(signUpDto);
+    const user = await this.prisma.user.create({
+      data: {
+        ...signUpDto,
+        password: await this.argonHash.hashData(signUpDto.password),
+      },
+    });
 
     return {
       access_token: this.jwtService.sign({
@@ -42,18 +48,27 @@ export class AuthService {
     email: string,
     pass: string,
   ): Promise<TAuthorizedUser | null> {
-    const user = await this.usersService.findOne(email);
+    const user = await this.prisma.user.findUnique({
+      where: { email },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        password: true,
+        createdAt: true,
+      },
+    });
+
     if (!user) {
       return null;
     }
 
-    const isValid = await this.hash.verifyData(user.password, pass);
+    const isValid = await this.argonHash.verifyData(user.password, pass);
     if (!isValid) {
       return null;
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { password, ...userWithoutPassword } = user;
-    return userWithoutPassword;
+    return R.omit(['password'], user);
   }
 }
