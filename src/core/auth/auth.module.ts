@@ -1,6 +1,5 @@
 import { Global, Module } from '@nestjs/common';
 import { AuthController } from './controllers/auth.controller';
-import { AuthService } from './services/auth.service';
 import { ArgonHashProvider, AuthCfgProvider } from './providers/auth.providers';
 import { JwtModule } from '@nestjs/jwt';
 import { jwtAsyncCfg } from './cfg';
@@ -13,7 +12,6 @@ import { IsUserExistPipe } from './pipes/is-user-exist.pipe';
   imports: [JwtModule.registerAsync(jwtAsyncCfg)],
   controllers: [AuthController],
   providers: [
-    AuthService,
     AuthCfgProvider,
     ArgonHashProvider,
     LocalStrategy,
