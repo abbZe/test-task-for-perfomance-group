@@ -5,6 +5,7 @@ import {
   IsNotEmpty,
   IsOptional,
   IsString,
+  IsUUID,
 } from 'class-validator';
 import { Transform } from 'class-transformer';
 
@@ -18,7 +19,7 @@ type TCreateArticleDto = Prisma.ArticleGetPayload<{
 }>;
 
 export class CreateArticleDto implements TCreateArticleDto {
-  @IsString()
+  @IsUUID()
   @IsNotEmpty()
   authorId: string;
 

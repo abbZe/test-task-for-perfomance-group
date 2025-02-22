@@ -12,8 +12,8 @@ import { Request, Response } from 'express';
 export class AllExceptionsFilter implements ExceptionFilter {
   catch(exception: unknown, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
-    const response = ctx.getResponse<Response>();
-    const request = ctx.getRequest<Request>();
+    const res = ctx.getResponse<Response>();
+    const req = ctx.getRequest<Request>();
 
     const status =
       exception instanceof HttpException
@@ -28,20 +28,17 @@ export class AllExceptionsFilter implements ExceptionFilter {
     const errorResponse = {
       statusCode: status,
       timestamp: new Date().toISOString(),
-      path: request.url,
-      method: request.method,
-      message:
-        typeof message === 'string'
-          ? message
-          : (message as any)?.message || 'Something went wrong',
+      path: req.url,
+      method: req.method,
+      message: typeof message === 'string' ? message : 'Something went wrong',
     };
 
     Logger.error(
-      `Error: ${status} - ${request.method} ${request.url} - ${JSON.stringify(
+      `Error: ${status} - ${req.method} ${req.url} - ${JSON.stringify(
         message,
       )}`,
     );
 
-    response.status(status).json(errorResponse);
+    res.status(status).json(errorResponse);
   }
 }

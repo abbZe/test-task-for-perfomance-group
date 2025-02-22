@@ -4,14 +4,14 @@ import {
   BadRequestException,
   ConflictException,
 } from '@nestjs/common';
-import { UsersService } from '../../users/services/users.service';
 import { SignUpDto } from '../dtos/sign-up.dto';
 import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
+import { PrismaService } from '../../db/db.service';
 
 @Injectable()
 export class IsUserExistPipe implements PipeTransform {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   async transform(value: SignUpDto) {
     const signUpDtoInstance = plainToInstance(SignUpDto, value);
@@ -23,7 +23,11 @@ export class IsUserExistPipe implements PipeTransform {
       );
     }
 
-    const userExists = await this.usersService.findOne(signUpDtoInstance.email);
+    const userExists = await this.prisma.user.findUnique({
+      where: {
+        email: signUpDtoInstance.email,
+      },
+    });
 
     if (userExists) {
       throw new ConflictException('User with this email already exists');
