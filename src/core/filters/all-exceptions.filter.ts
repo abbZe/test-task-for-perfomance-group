@@ -7,6 +7,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
+import * as R from 'ramda';
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
@@ -30,7 +31,11 @@ export class AllExceptionsFilter implements ExceptionFilter {
       timestamp: new Date().toISOString(),
       path: req.url,
       method: req.method,
-      message: typeof message === 'string' ? message : 'Something went wrong',
+      message: R.cond([
+        [R.is(String), R.identity],
+        [R.prop('message'), R.prop('message')],
+        [R.T, R.always('Something went wrong')],
+      ])(message),
     };
 
     Logger.error(

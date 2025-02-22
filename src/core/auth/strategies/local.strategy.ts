@@ -1,25 +1,44 @@
 import { Strategy } from 'passport-local';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { AuthService } from '../services/auth.service';
 import { TAuthorizedUser } from '../types';
+import * as R from 'ramda';
+import { PrismaService } from '../../db/db.service';
+import { ArgonHash, IArgonHashOpts } from '../providers/auth.providers';
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
-  constructor(private authService: AuthService) {
+  constructor(
+    private readonly prisma: PrismaService,
+
+    @ArgonHash() private readonly argonHash: IArgonHashOpts,
+  ) {
     super({ usernameField: 'email' });
   }
 
   async validate(email: string, password: string): Promise<TAuthorizedUser> {
-    const user = await this.authService.validateUser(
-      email.toLowerCase(),
-      password,
-    );
+    const user = await this.prisma.user.findUnique({
+      where: { email: email.toLowerCase() },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        password: true,
+        createdAt: true,
+      },
+    });
 
     if (!user) {
       throw new UnauthorizedException();
     }
 
-    return user;
+    const isValid = await this.argonHash.verifyData(user.password, password);
+
+    if (!isValid) {
+      throw new UnauthorizedException();
+    }
+
+    return R.omit(['password'], user);
   }
 }
