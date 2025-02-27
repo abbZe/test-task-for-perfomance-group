@@ -110,8 +110,7 @@ export class ArticlesController {
     @Body() patchArticleByIdDto: PatchArticleByIdDto,
   ): Promise<Partial<PatchArticleByIdDto>> {
     const selected = R.pipe<
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      any,
+      Array<Partial<PatchArticleByIdDto>>,
       Partial<PatchArticleByIdDto>,
       Partial<PatchArticleByIdDto>
     >(
